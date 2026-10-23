@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoEast | Cleaner East, Together</title>
+  <style>
+    :root {
+      --green: #16845b;
+      --green-dark: #0b5c3d;
+      --green-light: #e8f6ee;
+      --ink: #18312a;
+      --muted: #687a73;
+      --line: #e1eae5;
+      --surface: #ffffff;
+      --bg: #f5f8f6;
+      --orange: #f2a54a;
+      --red: #c74646;
+      --shadow: 0 12px 35px rgba(20, 65, 45, .08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
+    .sidebar { background: #fff; border-right: 1px solid var(--line); padding: 25px 16px; display: flex; flex-direction: column; gap: 26px; }
+    .brand { display:flex; align-items:center; gap:11px; padding: 0 10px; }
+    .brand-mark { width:40px; height:40px; border-radius:13px; background:var(--green); color:white; display:grid; place-items:center; font-size:23px; font-weight:800; }
+    .brand strong { display:block; font-size:20px; letter-spacing:-.6px; }
+    .brand small { color:var(--muted); font-size:11px; }
+    .role-box { margin:0 5px; background:var(--green-light); border:1px solid #d5ecdf; padding:12px; border-radius:14px; }
+    .role-box label { display:block; color:var(--green-dark); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.7px; margin-bottom:6px; }
+    .role-box select { width:100%; border:1px solid #c9e4d4; border-radius:9px; padding:9px; background:#fff; color:var(--ink); }
+    .nav-label { color:#8a9b93; font-size:10px; font-weight:800; letter-spacing:1.2px; padding:0 12px; margin-bottom:-15px; }
+    nav { display:grid; gap:4px; }
+    .nav-btn { display:flex; align-items:center; gap:11px; border:0; background:transparent; color:#63766e; padding:11px 12px; border-radius:10px; text-align:left; width:100%; transition:.15s; }
+    .nav-btn:hover { background:#f4f8f5; color:var(--green-dark); }
+    .nav-btn.active { background:var(--green-light); color:var(--green-dark); font-weight:750; }
+    .nav-btn .ico { width:22px; text-align:center; font-size:17px; }
+    .sidebar-footer { margin-top:auto; border-top:1px solid var(--line); padding:18px 10px 0; color:var(--muted); font-size:12px; }
+    .main { min-width:0; }
+    .topbar { height:76px; background:rgba(255,255,255,.92); border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 34px; position:sticky; top:0; z-index:5; backdrop-filter:blur(12px); }
+    .crumb { color:var(--muted); font-size:13px; }
+    .top-actions { display:flex; align-items:center; gap:14px; }
+    .icon-btn { width:40px; height:40px; border:1px solid var(--line); background:white; border-radius:12px; }
+    .avatar { width:38px; height:38px; border-radius:50%; background:#d5ecdf; color:var(--green-dark); display:grid; place-items:center; font-weight:800; }
+    .user-chip { display:flex; align-items:center; gap:10px; }
+    .user-chip strong { display:block; font-size:13px; }
+    .user-chip small { display:block; color:var(--muted); font-size:11px; }
+    .content { max-width:1500px; margin:auto; padding:30px 34px 45px; }
+    .welcome { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; margin-bottom:26px; }
+    .eyebrow { color:var(--green); text-transform:uppercase; font-size:11px; letter-spacing:1.5px; font-weight:850; }
+    h1 { margin:5px 0 7px; font-size:clamp(27px,3vw,38px); letter-spacing:-1.4px; line-height:1.12; }
+    h2 { margin:0; font-size:18px; letter-spacing:-.4px; }
+    h3 { margin:0; font-size:15px; }
+    p { margin:0; }
+    .muted { color:var(--muted); }
+    .welcome p { max-width:650px; color:var(--muted); }
+    .btn { border:0; border-radius:11px; padding:11px 15px; font-weight:750; transition:.15s; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+    .btn-primary { background:var(--green); color:white; }
+    .btn-primary:hover { background:var(--green-dark); transform:translateY(-1px); }
+    .btn-secondary { background:white; color:var(--ink); border:1px solid var(--line); }
+    .btn-soft { background:var(--green-light); color:var(--green-dark); }
+    .grid { display:grid; gap:18px; }
+    .stats { grid-template-columns:repeat(4,minmax(0,1fr)); margin-bottom:22px; }
+    .stat, .panel, .action-card { background:var(--surface); border:1px solid var(--line); border-radius:17px; box-shadow:var(--shadow); }
+    .stat { padding:20px; }
+    .stat-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; color:var(--muted); font-size:12px; font-weight:650; }
+    .stat-icon { width:37px; height:37px; border-radius:12px; background:var(--green-light); display:grid; place-items:center; font-size:18px; }
+    .stat strong { font-size:29px; letter-spacing:-1px; display:block; line-height:1.1; margin-bottom:7px; }
+    .stat small { color:var(--muted); font-size:12px; }
+    .two-col { grid-template-columns:minmax(0,1.35fr) minmax(280px,.8fr); align-items:start; }
+    .panel { padding:22px; min-width:0; }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+    .panel-head p { color:var(--muted); font-size:12px; margin-top:4px; }
+    .text-link { border:0; background:transparent; color:var(--green); font-weight:800; font-size:12px; padding:6px; }
+    .quick-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .action-card { text-align:left; padding:19px; cursor:pointer; transition:.18s; }
+    .action-card:hover { transform:translateY(-3px); border-color:#a9d8bf; }
+    .action-icon { width:43px; height:43px; border-radius:13px; display:grid; place-items:center; background:var(--green-light); font-size:22px; margin-bottom:13px; }
+    .action-card strong { display:block; margin-bottom:5px; }
+    .action-card p { color:var(--muted); font-size:12px; }
+    .activity-list { display:grid; }
+    .activity { display:flex; align-items:flex-start; gap:12px; padding:14px 0; border-bottom:1px solid #edf2ee; }
+    .activity:last-child { border-bottom:0; padding-bottom:0; }
+    .activity-icon { width:36px; height:36px; flex:0 0 36px; border-radius:11px; display:grid; place-items:center; background:#f0f5f1; }
+    .activity strong { font-size:13px; display:block; margin-bottom:3px; }
+    .activity p { color:var(--muted); font-size:12px; }
+    .pill { display:inline-flex; align-items:center; border-radius:999px; padding:5px 9px; font-size:11px; font-weight:800; background:#edf2ee; color:#53655b; white-space:nowrap; }
+    .pill.green { background:#e5f6eb; color:#147548; }
+    .pill.orange { background:#fff2df; color:#98600e; }
+    .pill.red { background:#ffebeb; color:#a43131; }
+    .pill.blue { background:#e9f2ff; color:#2e5e9d; }
+    .section-title { display:flex; justify-content:space-between; align-items:flex-end; gap:18px; margin-bottom:22px; }
+    .section-title p { color:var(--muted); margin-top:6px; }
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .field { display:grid; gap:7px; }
+    .field.full { grid-column:1/-1; }
+    .field label { font-size:12px; font-weight:800; color:#42574d; }
+    .field input,.field select,.field textarea,.toolbar input,.toolbar select { width:100%; border:1px solid #dce6df; border-radius:10px; background:#fff; padding:11px 12px; outline:none; color:var(--ink); }
+    .field textarea { min-height:110px; resize:vertical; }
+    .field input:focus,.field select:focus,.field textarea:focus,.toolbar input:focus,.toolbar select:focus { border-color:#72bc94; box-shadow:0 0 0 3px #e8f6ee; }
+    .form-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+    .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:17px; }
+    .toolbar input { max-width:300px; }
+    .toolbar select { width:auto; min-width:145px; }
+    .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:13px; }
+    table { border-collapse:collapse; width:100%; min-width:600px; text-align:left; }
+    th,td { padding:14px 15px; border-bottom:1px solid #edf1ee; font-size:12px; }
+    th { background:#f7faf8; color:#718178; text-transform:uppercase; letter-spacing:.7px; font-size:10px; }
+    tr:last-child td { border-bottom:0; }
+    .empty { padding:30px; text-align:center; color:var(--muted); }
+    .schedule-list { display:grid; gap:12px; }
+    .schedule-item { display:flex; gap:14px; align-items:center; padding:15px; border:1px solid var(--line); border-radius:13px; }
+    .date-box { min-width:56px; text-align:center; background:var(--green-light); color:var(--green-dark); border-radius:11px; padding:8px; }
+    .date-box strong { display:block; font-size:20px; line-height:1.1; }
+    .date-box small { font-size:10px; font-weight:800; text-transform:uppercase; }
+    .schedule-item .grow { flex:1; min-width:0; }
+    .guide-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .guide-card { padding:18px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+    .guide-card .action-icon { margin-bottom:12px; }
+    .guide-card p { color:var(--muted); font-size:12px; margin-top:7px; }
+    .guide-card ul { color:#52665b; padding-left:18px; font-size:12px; }
+    .notice { padding:13px 15px; border-radius:12px; background:#fff8e9; border:1px solid #f6e4bb; color:#77591e; font-size:12px; margin-bottom:18px; }
+    .toast { position:fixed; right:24px; bottom:24px; z-index:20; max-width:360px; background:#183b2c; color:#fff; padding:15px 18px; border-radius:13px; box-shadow:0 12px 35px #0002; opacity:0; transform:translateY(12px); pointer-events:none; transition:.25s; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .mobile-menu { display:none; }
+    body:not(.logged-in) .app-shell { display:none; }
+    .login-screen { min-height:100vh; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr); background:#f5f8f6; }
+    body.logged-in .login-screen { display:none; }
+    .login-visual { background:linear-gradient(145deg,#0b5c3d,#16845b 58%,#42a879); color:#fff; padding:clamp(35px,7vw,95px); display:flex; flex-direction:column; justify-content:space-between; min-height:100vh; position:relative; overflow:hidden; }
+    .login-visual:after { content:"♻"; position:absolute; right:-45px; bottom:40px; font-size:clamp(220px,34vw,460px); color:rgba(255,255,255,.08); line-height:1; pointer-events:none; }
+    .login-brand { display:flex; align-items:center; gap:12px; position:relative; z-index:1; }
+    .login-brand .brand-mark { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3); }
+    .login-brand strong { display:block; font-size:24px; }
+    .login-brand small { color:#d7f0e1; }
+    .login-message { position:relative; z-index:1; max-width:560px; margin:60px 0; }
+    .login-message .eyebrow { color:#c4f0d6; }
+    .login-message h1 { font-size:clamp(38px,5vw,62px); margin:14px 0 18px; letter-spacing:-2px; }
+    .login-message p { color:#e0f4e8; font-size:16px; max-width:460px; }
+    .login-feature { display:flex; gap:12px; align-items:center; margin-top:28px; font-size:13px; color:#e2f5e9; position:relative; z-index:1; }
+    .login-feature span { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; background:#ffffff20; }
+    .login-side { display:grid; place-items:center; padding:35px 24px; }
+    .login-card { width:min(100%,440px); background:#fff; border:1px solid var(--line); border-radius:22px; padding:clamp(24px,4vw,40px); box-shadow:0 20px 60px rgba(20,65,45,.10); }
+    .login-card h2 { font-size:27px; letter-spacing:-.8px; margin:8px 0; }
+    .login-card .subcopy { color:var(--muted); margin-bottom:25px; font-size:13px; }
+    .login-card .field { margin-bottom:16px; }
+    .login-card .btn { width:100%; margin-top:6px; padding:13px; }
+    .login-error { display:none; background:#ffebeb; color:#a43131; padding:10px 12px; border-radius:10px; font-size:12px; margin-bottom:14px; }
+    .demo-hint { margin-top:18px; background:#f5f8f6; padding:12px; border-radius:11px; color:var(--muted); font-size:11px; }
+    .login-footer { font-size:11px; color:#8a9b93; margin-top:20px; text-align:center; }
+    .logout-btn { border:1px solid var(--line); background:#fff; color:#52665b; border-radius:10px; padding:9px 11px; font-size:12px; font-weight:750; }
+    @media(max-width:760px) { .login-screen { grid-template-columns:1fr; } .login-visual { min-height:auto; padding:26px 25px 30px; } .login-message { margin:35px 0 5px; } .login-message h1 { font-size:38px; } .login-feature { display:none; } .login-visual:after { font-size:200px; bottom:-60px; right:-25px; } .login-side { padding:25px 15px 35px; } .login-card { padding:25px; } }
+    @media(max-width:1100px) { .app-shell { grid-template-columns:215px minmax(0,1fr); } .content { padding:25px 22px; } .topbar { padding:0 22px; } .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .guide-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:760px) { .app-shell { display:block; } .sidebar { display:none; position:fixed; z-index:15; inset:0 auto 0 0; width:270px; box-shadow:0 0 0 100vmax #102b1f66; overflow:auto; } .sidebar.open { display:flex; } .mobile-menu { display:inline-grid; place-items:center; } .topbar { height:66px; padding:0 15px; } .top-actions { gap:8px; } .user-chip > div:last-child { display:none; } .content { padding:22px 15px 35px; } .welcome { display:block; } .welcome .btn { margin-top:15px; } .stats { gap:10px; } .stat { padding:15px; } .stat strong { font-size:24px; } .two-col { grid-template-columns:1fr; } .quick-grid,.guide-grid,.form-grid { grid-template-columns:1fr; } .field.full { grid-column:auto; } .panel { padding:17px; } .section-title { display:block; } .section-title .btn { margin-top:13px; } .toolbar input { max-width:none; flex:1 1 100%; } }
+  </style>
+</head>
+<body>
+<section class="login-screen" id="loginScreen">
+  <div class="login-visual">
+    <a class="login-brand" href="#"><span class="brand-mark">♻</span><span><strong>EcoEast</strong><small>Cleaner East, together</small></span></a>
+    <div class="login-message"><div class="eyebrow">Buffalo City Metropolitan Municipality</div><h1>A cleaner East starts with us.</h1><p>Sign in to manage waste services, report environmental issues and keep your community moving towards a cleaner future.</p><div class="login-feature"><span>♻</span><div><strong>One place for waste services</strong><br>Requests, collection schedules and issue reporting.</div></div></div>
+    <div style="font-size:11px;color:#d7f0e1;position:relative;z-index:1">EcoEast · Service access portal</div>
+  </div>
+  <div class="login-side"><form class="login-card" id="loginForm">
+    <div class="eyebrow">Welcome back</div><h2>Sign in to EcoEast</h2><p class="subcopy">Use your account to open the correct workspace.</p>
+    <div class="login-error" id="loginError" role="alert">The demo email does not match the selected role. Check your details and try again.</div>
+    <div class="field"><label for="loginRole">Account type</label><select id="loginRole" required><option value="resident">Resident</option><option value="manager">Manager</option><option value="worker">Field worker</option><option value="admin">IT administrator</option><option value="public">Public access (no account)</option></select></div>
+    <div class="field"><label for="loginEmail">Email address</label><input id="loginEmail" type="email" value="resident@ecoeast.demo" placeholder="you@example.com" autocomplete="username" required></div>
+    <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" value="EcoEast123!" placeholder="Enter your password" autocomplete="current-password" required></div>
+    <button class="btn btn-primary" type="submit">Sign in →</button>
+    <div class="demo-hint"><strong>Demo sign-in</strong><br>Select a role and use its demo email below. The password for all demo accounts is <strong>EcoEast123!</strong>.<br><br>Resident: resident@ecoeast.demo<br>Manager: manager@ecoeast.demo<br>Field worker: worker@ecoeast.demo<br>IT administrator: admin@ecoeast.demo<br>Public access: choose Public access and enter any email.</div>
+    <div class="login-footer">New resident? <button type="button" class="text-link" id="showRegisterBtn">Create a resident profile</button></div>
+    <div class="login-footer">Prototype only · Do not use real passwords or personal information.</div>
+  </form>
+  <form class="login-card" id="registerForm" style="display:none">
+    <div class="eyebrow">Resident registration</div><h2>Create your profile</h2><p class="subcopy">Self-registration is available to residents only. Staff accounts must be created by an administrator.</p>
+    <div class="login-error" id="registerError" role="alert"></div>
+    <div class="field"><label for="regName">Full name *</label><input id="regName" required autocomplete="name" placeholder="Your full name"></div>
+    <div class="field"><label for="regEmail">Email address *</label><input id="regEmail" type="email" required autocomplete="email" placeholder="you@example.com"></div>
+    <div class="field"><label for="regArea">Suburb *</label><select id="regArea" required><option value="">Choose your suburb</option><option>Southernwood</option><option>Quigney</option><option>Beacon Bay</option><option>Northcrest</option><option>Other / not listed</option></select></div>
+    <div class="field"><label for="regPassword">Create password *</label><input id="regPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters"></div>
+    <div class="field"><label for="regConfirm">Confirm password *</label><input id="regConfirm" type="password" required minlength="8" autocomplete="new-password" placeholder="Re-enter password"></div>
+    <button class="btn btn-primary" type="submit">Create resident profile →</button>
+    <div class="login-footer">Already have an account? <button type="button" class="text-link" id="showLoginBtn">Back to sign in</button></div>
+  </form></div>
+</section>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#" data-page="home">
+      <span class="brand-mark">♻</span><span><strong>EcoEast</strong><small>Cleaner East, together</small></span>
+    </a>
+    <div class="role-box">
+      <label for="roleSelect">Preview as role</label>
+      <select id="roleSelect">
+        <option value="resident">Resident</option>
+        <option value="manager">Manager</option>
+        <option value="worker">Field worker</option>
+        <option value="admin">IT administrator</option>
+        <option value="public">Public homepage</option>
+      </select>
+    </div>
+    <div class="nav-label">WORKSPACE</div>
+    <nav id="navigation"></nav>
+    <div class="sidebar-footer">EcoEast · BCMM waste services<br>Interactive frontend prototype</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Open menu">☰</button>
+        <span class="crumb" id="breadcrumb">Resident workspace / Overview</span>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="notificationBtn" aria-label="Notifications">♧</button>
+        <button class="logout-btn" id="logoutBtn" type="button">Sign out ↗</button>
+        <div class="user-chip"><div class="avatar" id="avatar">R</div><div><strong id="userName">Resident Demo</strong><small id="userRole">Resident account</small></div></div>
+      </div>
+    </header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  const $ = (s, root=document) => root.querySelector(s);
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function api(path, options={}) { let response; try { response=await fetch(path,{headers:{"Content-Type":"application/json",...(options.headers||{})},...options}); } catch (err) { throw new Error("Cannot reach the EcoEast API. Start the project with run-ecoeast.bat or `dotnet run`, then open http://localhost:5080 in your browser. Do not open wwwroot/index.html directly."); } const body=await response.json().catch(()=>({})); if(!response.ok) throw new Error(body.message||`API request failed (${response.status})`); return body; }
+  const roleInfo = {
+    resident:{name:'Resident Demo',label:'Resident account',letter:'R',nav:[['home','⌂','Overview'],['request','＋','Request a Service'],['report','⚑','Report an Issue'],['requests','▤','My Requests'],['reports','⚠','My Reports'],['schedules','▦','Waste Schedules'],['guide','♻','Recycling Guide'],['profile','○','My Profile']]},
+    manager:{name:'Manager Demo',label:'Municipal manager',letter:'M',nav:[['home','⌂','Overview'],['requests','▤','Service Requests'],['reports','⚠','Issue Reports'],['schedules','▦','Waste Schedules'],['assign','⇄','Assign Workers'],['guide','♻','Recycling Guide'],['analytics','▥','Reports & Analytics']]},
+    worker:{name:'Field Worker Demo',label:'Field operations',letter:'F',nav:[['home','⌂','Overview'],['assign','▤','My Assignments'],['schedules','▦','Collection Schedule'],['profile','○','My Profile']]},
+    admin:{name:'IT Admin Demo',label:'System administrator',letter:'A',nav:[['home','⌂','Overview'],['accounts','♙','User Accounts'],['permissions','⚿','Roles & Permissions'],['providers','♧','Service Providers'],['audit','≡','Audit Logs']]},
+    public:{name:'Welcome',label:'Public access',letter:'E',nav:[['home','⌂','Home'],['request','＋','Request a Service'],['report','⚑','Report an Issue'],['schedules','▦','Waste Schedules'],['guide','♻','Recycling Guide']]}
+  };
+  let role = 'resident', page = 'home', toastTimer;
+  // Prototype-only in-memory accounts. Production authentication must be server-side.
+  const accounts = [
+    {name:'Resident Demo',email:'resident@ecoeast.demo',password:'EcoEast123!',role:'resident',area:'Southernwood',status:'Active'},
+    {name:'Manager Demo',email:'manager@ecoeast.demo',password:'EcoEast123!',role:'manager',area:'BCMM',status:'Active'},
+    {name:'Field Worker Demo',email:'worker@ecoeast.demo',password:'EcoEast123!',role:'worker',area:'Quigney',status:'Active'},
+    {name:'IT Admin Demo',email:'admin@ecoeast.demo',password:'EcoEast123!',role:'admin',area:'System',status:'Active'}
+  ];
+  let signedInAccount = null;
+  let requests = [
+    {id:'ER-1042',type:'Missed domestic collection',area:'Southernwood',date:'2026-10-15',status:'In progress'},
+    {id:'ER-1037',type:'Bulk recycling pickup',area:'Quigney',date:'2026-10-12',status:'Submitted'},
+    {id:'ER-1021',type:'Damaged bin replacement',area:'Beacon Bay',date:'2026-10-08',status:'Resolved'}
+  ];
+  let reports = [
+    {id:'IR-2081',type:'Illegal dumping',area:'Southernwood',date:'2026-10-16',status:'Under review'},
+    {id:'IR-2072',type:'Overflowing public bin',area:'Quigney',date:'2026-10-14',status:'Assigned'},
+    {id:'IR-2059',type:'Hazardous waste',area:'Northcrest',date:'2026-10-10',status:'Resolved'}
+  ];
+  let schedules = [
+    {date:'2026-10-21',area:'Southernwood',type:'Domestic waste',time:'07:00–10:00',worker:'Field Team A'},
+    {date:'2026-10-22',area:'Quigney',type:'Recycling collection',time:'08:00–11:00',worker:'Field Team B'},
+    {date:'2026-10-24',area:'Beacon Bay',type:'Domestic waste',time:'07:00–10:00',worker:'Field Team A'},
+    {date:'2026-10-26',area:'Northcrest',type:'Bulk pickup',time:'09:00–12:00',worker:'Field Team C'}
+  ];
+  const pages = {
+    home:'Overview',request:'Request a Service',report:'Report an Issue',requests:'Service Requests',reports:'Issue Reports',schedules:'Waste Schedules',guide:'Recycling Guide',profile:'My Profile',assign:'Assign Workers',analytics:'Reports & Analytics',accounts:'User Accounts',permissions:'Roles & Permissions',providers:'Service Providers',audit:'Audit Logs'
+  };
+  const setToast = message => { const t=$('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3300); };
+  function navigate(next) { page=next; renderNav(); renderPage(); $('#sidebar').classList.remove('open'); window.scrollTo({top:0,behavior:'smooth'}); }
+  function renderNav() {
+    const info=roleInfo[role];
+    $('#navigation').innerHTML=info.nav.map(([id,ico,label])=>`<button class="nav-btn ${page===id?'active':''}" data-page="${id}"><span class="ico">${ico}</span>${label}</button>`).join('');
+    $('#userName').textContent=signedInAccount?.name||info.name; $('#userRole').textContent=info.label; $('#avatar').textContent=(signedInAccount?.name||info.name).slice(0,1).toUpperCase();
+    $('#breadcrumb').textContent=`${info.label} / ${pages[page]||'Overview'}`;
+    // Only administrators may use the preview selector; ordinary users cannot switch roles.
+    $('.role-box').style.display = role==='admin' ? '' : 'none';
+  }
+  const pill = status => {
+    const cls = /resolved|completed/i.test(status)?'green':/progress|assigned|review/i.test(status)?'orange':/hazard|urgent/i.test(status)?'red':'blue';
+    return `<span class="pill ${cls}">${esc(status)}</span>`;
+  };
+  const section = (title,desc,button='') => `<div class="section-title"><div><div class="eyebrow">EcoEast workspace</div><h1>${title}</h1><p>${desc}</p></div>${button}</div>`;
+  function table(rows,headers) {
+    if(!rows.length) return '<div class="empty">No records match your search.</div>';
+    return `<div class="table-wrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+  }
+  function renderHome() {
+    if(role==='public') return `
+      <div class="welcome"><div><div class="eyebrow">Buffalo City Metropolitan Municipality</div><h1>A cleaner East starts with us.</h1><p>Request waste services, report environmental concerns and find out how to recycle responsibly — all in one place.</p><button class="btn btn-primary" data-page="request">＋ Request a service</button> <button class="btn btn-secondary" data-page="report">⚑ Report an issue</button></div><div class="stat" style="min-width:190px"><div class="stat-icon">♻</div><strong>One cleaner city</strong><small>Small actions make a lasting difference.</small></div></div>
+      <div class="grid quick-grid">
+        <button class="action-card" data-page="request"><div class="action-icon">🚛</div><strong>Waste services</strong><p>Request a missed collection, bulk pickup or bin replacement.</p></button>
+        <button class="action-card" data-page="report"><div class="action-icon">⚑</div><strong>Report an issue</strong><p>Help flag illegal dumping, damaged bins and environmental hazards.</p></button>
+        <button class="action-card" data-page="schedules"><div class="action-icon">🗓</div><strong>Collection schedules</strong><p>Check example collection dates for your area.</p></button>
+        <button class="action-card" data-page="guide"><div class="action-icon">♻</div><strong>Recycling guide</strong><p>Learn what can be recycled and how to prepare it.</p></button>
+      </div><div class="notice" style="margin-top:18px">This is a demonstration website. Requests and schedules are sample data and are not sent to BCMM.</div>`;
+    const stats = role==='manager' ? [['Open requests','42','Across service areas','▤'],['Issue reports','18','Awaiting action','⚑'],['Scheduled pickups','27','Upcoming collections','▦'],['Active field workers','12','Demo staff records','♙']] :
+      role==='worker' ? [['My assignments','8','3 due today','▤'],['Completed this week','16','Demo activity','✓'],['Upcoming collections','5','Assigned routes','▦'],['Issues flagged','2','Need follow-up','⚑']] :
+      role==='admin' ? [['User accounts','248','Demo accounts','♙'],['Active roles','4','Access groups','⚿'],['Service providers','6','Configured providers','♧'],['Audit events','31','Recent demo events','≡']] :
+      [['My requests','3','1 in progress','▤'],['Issue reports','3','1 under review','⚑'],['Next collection','21 Oct','Southernwood · 07:00','▦'],['Recycling impact','6 items','Example items diverted','♻']];
+    return `
+      <div class="welcome"><div><div class="eyebrow">${role==='resident'?'Resident portal':role==='manager'?'Operations overview':role==='worker'?'Field operations':'System administration'}</div><h1>${role==='resident'?'Good evening, Resident.':role==='manager'?'Service operations at a glance.':role==='worker'?'Your fieldwork overview.':'System overview.'}</h1><p>${role==='resident'?'Manage your waste service requests, report local issues and stay up to date with collections.':role==='manager'?'Review service activity, coordinate workers and monitor reports across municipal service areas.':role==='worker'?'See your assigned collections and update the team on field activities.':'Preview user administration, role access and service provider configuration.'}</p></div><button class="btn btn-primary" data-page="${role==='worker'?'assign':'request'}">＋ ${role==='worker'?'View assignments':'Create a request'}</button></div>
+      <div class="grid stats">${stats.map(([label,value,sub,ico])=>`<div class="stat"><div class="stat-top"><span>${label}</span><span class="stat-icon">${ico}</span></div><strong>${value}</strong><small>${sub}</small></div>`).join('')}</div>
+      <div class="grid two-col"><section class="panel"><div class="panel-head"><div><h2>${role==='worker'?'Today’s assignments':role==='manager'?'Recent service activity':role==='admin'?'System activity':'Recent requests'}</h2><p>Example records for the prototype</p></div><button class="text-link" data-page="${role==='manager'?'requests':role==='worker'?'assign':role==='admin'?'audit':'requests'}">View all →</button></div><div class="activity-list">${(role==='resident'?requests.slice(0,3):role==='manager'?requests.slice(0,3):role==='worker'?schedules.slice(0,3):[{id:'AU-341',type:'Role settings viewed',area:'Admin console',date:'2026-10-18',status:'Logged'},{id:'AU-340',type:'Provider list updated',area:'Admin console',date:'2026-10-17',status:'Logged'},{id:'AU-339',type:'User account created',area:'Admin console',date:'2026-10-16',status:'Logged'}]).map(item=>`<div class="activity"><div class="activity-icon">${role==='worker'?'▦':'▤'}</div><div style="flex:1"><strong>${esc(item.type)}</strong><p>${esc(item.id||item.area)} · ${esc(item.area||item.time)} · ${esc(item.date||'Upcoming')}</p></div>${pill(item.status||'Scheduled')}</div>`).join('')}</div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Quick actions</h2><p>Get where you need to go</p></div></div><div class="grid quick-grid">
+        <button class="action-card" data-page="${role==='worker'?'assign':'request'}"><div class="action-icon">🚛</div><strong>${role==='worker'?'My assignments':'Request a service'}</strong><p>${role==='worker'?'Review work allocated to you.':'Collection, recycling or bin services.'}</p></button>
+        <button class="action-card" data-page="${role==='worker'?'schedules':'report'}"><div class="action-icon">⚑</div><strong>${role==='worker'?'Collection schedule':'Report an issue'}</strong><p>${role==='worker'?'See upcoming route dates.':'Flag a local environmental problem.'}</p></button>
+        <button class="action-card" data-page="schedules"><div class="action-icon">🗓</div><strong>Waste schedules</strong><p>Check dates and collection areas.</p></button>
+        <button class="action-card" data-page="guide"><div class="action-icon">♻</div><strong>Recycling guide</strong><p>Know what goes in each stream.</p></button>
+      </div></section></div>
+      <div class="notice" style="margin-top:18px">Prototype mode: sample information only. This page is not connected to the municipal database or a live authentication service.</div>`;
+  }
+  function renderRequest() {
+    return `${section('Request a waste service','Submit a service request for your household or area.')}<div class="panel"><form id="requestForm"><div class="form-grid">
+      <div class="field"><label for="requestType">Service type *</label><select id="requestType" required><option value="">Choose a service</option><option>Missed domestic waste collection</option><option>Bulk recycling pickup</option><option>Bin or receptacle replacement</option><option>Skip bin request</option><option>Additional waste collection</option><option>General service enquiry</option></select></div>
+      <div class="field"><label for="suburb">Suburb *</label><select id="suburb" required><option value="">Choose your area</option><option>Southernwood</option><option>Quigney</option><option>Beacon Bay</option><option>Northcrest</option><option>Other / not listed</option></select></div>
+      <div class="field"><label for="address">Street address or landmark *</label><input id="address" required placeholder="e.g. street name or nearby landmark"></div>
+      <div class="field"><label for="contact">Contact number</label><input id="contact" type="tel" placeholder="Your preferred contact number"></div>
+      <div class="field"><label for="preferredDate">Preferred date</label><input id="preferredDate" type="date"></div>
+      <div class="field"><label for="priority">Priority</label><select id="priority"><option>Normal</option><option>Urgent</option></select></div>
+      <div class="field full"><label for="requestDetails">Additional details *</label><textarea id="requestDetails" required placeholder="Describe the service needed, quantity of items, access details, etc."></textarea></div>
+    </div><div class="form-actions"><button class="btn btn-secondary" type="reset">Clear form</button><button class="btn btn-primary" type="submit">Submit request →</button></div></form></div>`;
+  }
+  function renderReport() {
+    return `${section('Report an environmental issue','Tell the municipality about a waste or environmental concern.')}<div class="panel"><form id="reportForm"><div class="form-grid">
+      <div class="field"><label for="reportType">Issue category *</label><select id="reportType" required><option value="">Choose a category</option><option>Illegal dumping</option><option>Overflowing public bin</option><option>Damaged or missing bin</option><option>Missed collection</option><option>Hazardous waste</option><option>Blocked drain / pollution</option><option>Other environmental concern</option></select></div>
+      <div class="field"><label for="reportSuburb">Suburb *</label><select id="reportSuburb" required><option value="">Choose your area</option><option>Southernwood</option><option>Quigney</option><option>Beacon Bay</option><option>Northcrest</option><option>Other / not listed</option></select></div>
+      <div class="field"><label for="reportAddress">Location or landmark *</label><input id="reportAddress" required placeholder="Where is the issue?"></div>
+      <div class="field"><label for="reportDate">Date observed</label><input id="reportDate" type="date"></div>
+      <div class="field"><label for="reportUrgency">Severity *</label><select id="reportUrgency" required><option>Routine</option><option>Needs attention soon</option><option>Urgent / potential hazard</option></select></div>
+      <div class="field"><label for="reportContact">Contact number (optional)</label><input id="reportContact" type="tel" placeholder="For follow-up if needed"></div>
+      <div class="field full"><label for="reportDetails">Describe the issue *</label><textarea id="reportDetails" required placeholder="What happened? Include nearby landmarks and any safety concerns."></textarea></div>
+    </div><div class="form-actions"><button class="btn btn-secondary" type="reset">Clear form</button><button class="btn btn-primary" type="submit">Submit report →</button></div></form></div>`;
+  }
+  function renderRequests() {
+    const manager=role==='manager';
+    const rows=requests.map(r=>`<tr><td><strong>${esc(r.id)}</strong></td><td>${esc(r.type)}</td><td>${esc(r.area)}</td><td>${esc(r.date)}</td><td>${pill(r.status)}</td><td><button class="text-link" data-action="view-request" data-id="${esc(r.id)}">View details</button></td></tr>`);
+    return `${section(manager?'Service requests':'My service requests',manager?'Review and manage incoming requests across service areas.':'Track the progress of your submitted service requests.',`<button class="btn btn-primary" data-page="request">＋ New request</button>`)}<div class="panel"><div class="toolbar"><input id="requestSearch" placeholder="Search requests…" aria-label="Search requests"><select id="requestStatus"><option value="">All statuses</option><option>Submitted</option><option>In progress</option><option>Resolved</option><option>Assigned</option></select></div><div id="requestTable">${table(rows,['Reference','Service type','Area','Submitted','Status','Action'])}</div></div>`;
+  }
+  function renderReports() {
+    const rows=reports.map(r=>`<tr><td><strong>${esc(r.id)}</strong></td><td>${esc(r.type)}</td><td>${esc(r.area)}</td><td>${esc(r.date)}</td><td>${pill(r.status)}</td><td><button class="text-link" data-action="view-report" data-id="${esc(r.id)}">View details</button></td></tr>`);
+    return `${section(role==='manager'?'Issue reports':'My issue reports','Monitor environmental reports and their follow-up status.')}<div class="panel"><div class="toolbar"><input id="reportSearch" placeholder="Search issue reports…" aria-label="Search issue reports"><select id="reportStatus"><option value="">All statuses</option><option>Under review</option><option>Assigned</option><option>Resolved</option><option>Submitted</option></select></div><div id="reportTable">${table(rows,['Reference','Issue','Area','Reported','Status','Action'])}</div></div>`;
+  }
+  function renderSchedules() {
+    const items=schedules.map(s=>{const d=new Date(s.date+'T12:00:00');return `<div class="schedule-item"><div class="date-box"><strong>${d.getDate()}</strong><small>${d.toLocaleString('en',{month:'short'})}</small></div><div class="grow"><h3>${esc(s.type)}</h3><p class="muted" style="font-size:12px;margin-top:4px">${esc(s.area)} · ${esc(s.time)}</p><p class="muted" style="font-size:11px;margin-top:3px">${role==='worker'?'Assigned team: ':'Collection team: '}${esc(s.worker)}</p></div>${pill('Scheduled')}</div>`;}).join('');
+    return `${section(role==='worker'?'Collection schedule':'Waste collection schedules','Example upcoming waste and recycling collections for selected service areas.',role==='manager'?'<button class="btn btn-primary" data-action="add-schedule">＋ Add schedule</button>':'')}<div class="grid two-col"><section class="panel"><div class="panel-head"><div><h2>Upcoming collections</h2><p>Demo dates — confirm with the municipality</p></div></div><div class="schedule-list">${items}</div></section><section class="panel"><div class="panel-head"><div><h2>Collection reminders</h2><p>Keep your area ready for collection</p></div></div><div class="activity-list"><div class="activity"><div class="activity-icon">🗓</div><div><strong>Before collection day</strong><p>Place household waste in the correct receptacle and keep access clear.</p></div></div><div class="activity"><div class="activity-icon">♻</div><div><strong>Recycling pickup</strong><p>Rinse suitable containers and separate recyclable materials.</p></div></div><div class="activity"><div class="activity-icon">⚑</div><div><strong>Collection missed?</strong><p>Submit a service request and include your street or nearest landmark.</p></div></div></div></section></div>`;
+  }
+  function renderGuide() {
+    const guides=[
+      ['♻','Paper & cardboard','Keep paper dry and clean. Flatten boxes to save space.',['Newspapers and magazines','Cardboard packaging','Office paper']],
+      ['🥫','Cans & metals','Empty containers and rinse away food residue.',['Aluminium drink cans','Steel food tins','Clean metal packaging']],
+      ['🍾','Glass containers','Handle broken glass carefully and follow local drop-off rules.',['Glass bottles','Food jars','Separate by local guidance']],
+      ['🧴','Plastic containers','Check local recycling acceptance and symbols.',['Clean bottles and tubs','Remove leftover liquid','Keep non-recyclables separate']],
+      ['🍂','Organic waste','Where supported, compost suitable food and garden waste.',['Leaves and grass cuttings','Fruit and vegetable scraps','Avoid mixed packaging']],
+      ['⚠','Special waste','Do not place hazardous items in ordinary household recycling.',['Batteries and chemicals','Medical or hazardous waste','Seek approved disposal advice']]
+    ];
+    return `${section('Recycling guide','Simple tips to help keep recyclable materials clean and out of landfill.')}<div class="grid guide-grid">${guides.map(([ico,title,desc,items])=>`<article class="guide-card"><div class="action-icon">${ico}</div><h3>${title}</h3><p>${desc}</p><ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul></article>`).join('')}</div><div class="notice" style="margin-top:18px">Recycling acceptance can vary by service provider and area. Check current BCMM guidance before placing items out for collection.</div>`;
+  }
+  function renderAssign() {
+    const rows=schedules.map((s,i)=>`<tr><td><strong>AS-${301+i}</strong></td><td>${esc(s.type)}</td><td>${esc(s.area)}</td><td>${esc(s.date)}</td><td>${esc(s.worker)}</td><td><button class="text-link" data-action="update-assignment" data-id="${i}">Update</button></td></tr>`);
+    return `${section(role==='worker'?'My assignments':'Assign field workers',role==='worker'?'Review your current work allocations and collection areas.':'Coordinate field teams with scheduled collection activities.',role==='manager'?'<button class="btn btn-primary" data-action="add-schedule">＋ New assignment</button>':'') }<div class="panel">${table(rows,['Assignment','Collection','Area','Date','Assigned team','Action'])}</div>`;
+  }
+  function renderAnalytics() {
+    const total=requests.length+reports.length;
+    return `${section('Reports & analytics','A simple snapshot of sample service activity.')}<div class="grid stats"><div class="stat"><div class="stat-top">Total tracked items <span class="stat-icon">▤</span></div><strong>${total}</strong><small>Requests and issue reports in demo</small></div><div class="stat"><div class="stat-top">Resolved items <span class="stat-icon">✓</span></div><strong>${requests.filter(r=>r.status==='Resolved').length+reports.filter(r=>r.status==='Resolved').length}</strong><small>Marked resolved in sample records</small></div><div class="stat"><div class="stat-top">Open requests <span class="stat-icon">⌛</span></div><strong>${requests.filter(r=>r.status!=='Resolved').length}</strong><small>Need further action</small></div><div class="stat"><div class="stat-top">Scheduled collections <span class="stat-icon">▦</span></div><strong>${schedules.length}</strong><small>Upcoming demo entries</small></div></div><div class="panel"><h2>Operational notes</h2><p class="muted" style="margin-top:8px">These figures are calculated from the sample records in this browser session. Connect the EcoEast API to report real municipal service performance.</p></div>`;
+  }
+  function renderAdmin() {
+    if(page==='accounts') {
+      const rows=accounts.map((u,i)=>`<tr><td><strong>${esc(u.name)}</strong></td><td>${esc(u.email)}</td><td>${esc(({resident:'Resident',manager:'Manager',worker:'Field worker',admin:'IT administrator'})[u.role]||u.role)}</td><td>${esc(u.area||'—')}</td><td>${pill(u.status||'Active')}</td><td>${u.email===signedInAccount?.email?'Current account':`<button class="text-link" data-action="toggle-user" data-index="${i}">${u.status==='Disabled'?'Enable':'Disable'}</button>`}</td></tr>`);
+      return `${section('User accounts','Administrators can create staff and resident accounts. Residents create their own profiles from the sign-in page.')}<div class="panel" style="margin-bottom:18px"><div class="panel-head"><div><h2>Add a user</h2><p>Use this form for accounts other than resident self-registration.</p></div></div><form id="adminUserForm"><div class="form-grid"><div class="field"><label for="newUserName">Full name *</label><input id="newUserName" required placeholder="Full name"></div><div class="field"><label for="newUserEmail">Email address *</label><input id="newUserEmail" type="email" required placeholder="name@example.com"></div><div class="field"><label for="newUserRole">Role *</label><select id="newUserRole" required><option value="">Choose role</option><option value="manager">Manager</option><option value="worker">Field worker</option><option value="admin">IT administrator</option><option value="resident">Resident</option></select></div><div class="field"><label for="newUserArea">Suburb / service area *</label><select id="newUserArea" required><option value="">Choose area</option><option>BCMM</option><option>Southernwood</option><option>Quigney</option><option>Beacon Bay</option><option>Northcrest</option><option>System</option></select></div><div class="field"><label for="newUserPassword">Temporary password *</label><input id="newUserPassword" type="password" required minlength="8" placeholder="At least 8 characters"></div><div class="field"><label for="newUserConfirm">Confirm password *</label><input id="newUserConfirm" type="password" required minlength="8" placeholder="Repeat password"></div></div><div class="form-actions"><button class="btn btn-primary" type="submit">＋ Create account</button></div></form></div><div class="panel"><div class="panel-head"><div><h2>Registered users</h2><p>${accounts.length} account(s) in this browser session</p></div></div>${table(rows,['Name','Email','Role','Area','Status','Action'])}</div>`;
+    }
+    const config={
+      permissions:{title:'Roles & permissions',desc:'Role groups and intended access boundaries.',heads:['Role','Typical access','Account status'],rows:[['Resident','Create own profile, create requests, report issues, view own records','Enabled'],['Manager','Manage requests, reports, schedules and assignments','Enabled'],['Field worker','View assigned work and collection schedules','Enabled'],['IT administrator','Create/manage user accounts, roles and providers','Enabled']]},
+      providers:{title:'Service providers',desc:'Example waste service providers for the configuration area.',heads:['Provider','Service area','Status'],rows:[['GreenClean Waste Services','East London','Example'],['EcoWaste Solutions','Mthatha','Example']]},
+      audit:{title:'Audit logs',desc:'Example events to demonstrate the audit view.',heads:['Reference','Event','Actor','Date'],rows:[['AU-341','Role settings viewed','IT Admin Demo','2026-10-18'],['AU-340','Provider list viewed','IT Admin Demo','2026-10-17'],['AU-339','User account created','IT Admin Demo','2026-10-16']]}
+    }[page];
+    return `${section(config.title,config.desc)}<div class="panel">${table(config.rows.map(row=>`<tr>${row.map(cell=>`<td>${esc(cell)}</td>`).join('')}</tr>`),config.heads)}<div class="form-actions"><button class="btn btn-secondary" data-action="demo-admin">＋ Add demo record</button></div></div>`;
+  }
+  function renderProfile() {
+    return `${section('My profile','Manage the details shown in this prototype account.')}<div class="panel"><form id="profileForm"><div class="form-grid"><div class="field"><label for="profileName">Display name</label><input id="profileName" value="${esc(roleInfo[role].name)}" required></div><div class="field"><label for="profileEmail">Email address</label><input id="profileEmail" type="email" placeholder="you@example.com"></div><div class="field"><label for="profilePhone">Contact number</label><input id="profilePhone" type="tel" placeholder="Optional"></div><div class="field"><label for="profileArea">Suburb / service area</label><select id="profileArea"><option>Southernwood</option><option>Quigney</option><option>Beacon Bay</option><option>Northcrest</option></select></div></div><div class="form-actions"><button class="btn btn-primary" type="submit">Save demo profile</button></div></form></div><div class="notice" style="margin-top:18px">Profile changes are temporary and remain only in this page session.</div>`;
+  }
+  async function syncAccounts(){ try { const serverAccounts=await api('/api/auth/accounts'); for(const a of serverAccounts){ const i=accounts.findIndex(u=>u.email.toLowerCase()===a.email.toLowerCase()); if(i>=0) accounts[i]={...accounts[i],...a}; else accounts.push(a); } } catch(e) { /* API offline: demo seed accounts remain visible */ } }
+  function renderPage() {
+    const content=$('#content');
+    const renderers={home:renderHome,request:renderRequest,report:renderReport,requests:renderRequests,reports:renderReports,schedules:renderSchedules,guide:renderGuide,assign:renderAssign,analytics:renderAnalytics,accounts:renderAdmin,permissions:renderAdmin,providers:renderAdmin,audit:renderAdmin,profile:renderProfile};
+    content.innerHTML=(renderers[page]||renderHome)();
+    if(page==='requests') bindFilters('requestSearch','requestStatus','requestTable',requests,['id','type','area','date','status'],['Reference','Service type','Area','Submitted','Status','Action'],'view-request');
+    if(page==='reports') bindFilters('reportSearch','reportStatus','reportTable',reports,['id','type','area','date','status'],['Reference','Issue','Area','Reported','Status','Action'],'view-report');
+  }
+  function bindFilters(searchId,statusId,tableId,data,keys,headers,action) {
+    const update=()=> {
+      const q=($('#'+searchId)?.value||'').toLowerCase(), st=$('#'+statusId)?.value||'';
+      const filtered=data.filter(row=>(!st||row.status===st)&&keys.some(k=>String(row[k]).toLowerCase().includes(q)));
+      $('#'+tableId).innerHTML=table(filtered.map(r=>`<tr><td><strong>${esc(r.id)}</strong></td><td>${esc(r.type)}</td><td>${esc(r.area)}</td><td>${esc(r.date)}</td><td>${pill(r.status)}</td><td><button class="text-link" data-action="${action}" data-id="${esc(r.id)}">View details</button></td></tr>`),headers);
+    };
+    $('#'+searchId).addEventListener('input',update); $('#'+statusId).addEventListener('change',update);
+  }
+  function showDetails(type,id) {
+    const list=type==='request'?requests:reports, item=list.find(x=>x.id===id);
+    if(!item) return;
+    setToast(`${item.id}: ${item.type} · ${item.area} · Status: ${item.status}`);
+  }
+  function render() { renderNav(); renderPage(); }
+  document.addEventListener('click',async e=>{
+    const nav=e.target.closest('[data-page]');
+    if(nav){e.preventDefault();navigate(nav.dataset.page);return;}
+    const action=e.target.closest('[data-action]');
+    if(!action)return;
+    const id=action.dataset.id;
+    if(action.dataset.action==='view-request')showDetails('request',id);
+    if(action.dataset.action==='view-report')showDetails('report',id);
+    if(action.dataset.action==='add-schedule')setToast('Demo only: connect the EcoEast API to create a real schedule.');
+    if(action.dataset.action==='update-assignment')setToast('Assignment details opened in demo mode.');
+    if(action.dataset.action==='demo-admin')setToast('Demo only: user and system changes are not saved.');
+    if(action.dataset.action==='toggle-user'){ 
+      if(role!=='admin'){setToast('Only administrators can manage accounts.');return;}
+      const u=accounts[Number(action.dataset.index)];
+      if(u){ const next=u.status==='Disabled'?'Active':'Disabled'; try { const updated=await api(`/api/auth/accounts/${encodeURIComponent(u.email)}/status`,{method:'PATCH',body:JSON.stringify({status:next})}); u.status=updated.status; setToast(`${u.name} account ${u.status.toLowerCase()}.`); renderPage(); } catch(err) { setToast(err.message); } }
+    }
+  });
+  $('#roleSelect').addEventListener('change',e=>{
+    if(!signedInAccount || signedInAccount.role!=='admin'){e.target.value=role;setToast('Only an administrator can preview another role.');return;}
+    role=e.target.value;
+    const allowed=roleInfo[role].nav.map(n=>n[0]);
+    if(!allowed.includes(page))page='home';
+    render();
+  });
+  $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
+  $('#notificationBtn').addEventListener('click',()=>setToast('You are all caught up. Notifications are sample-only in this prototype.'));
+  document.addEventListener('submit',async e=>{
+    if(e.target.id==='requestForm'){
+      e.preventDefault();
+      const id='ER-'+(1043+requests.length-3);
+      requests.unshift({id,type:$('#requestType').value,area:$('#suburb').value,date:new Date().toISOString().slice(0,10),status:'Submitted'});
+      setToast(`Demo request ${id} created locally. It has not been sent to BCMM.`);
+      navigate('requests');
+    }
+    if(e.target.id==='reportForm'){
+      e.preventDefault();
+      const id='IR-'+(2082+reports.length-3);
+      reports.unshift({id,type:$('#reportType').value,area:$('#reportSuburb').value,date:new Date().toISOString().slice(0,10),status:'Under review'});
+      setToast(`Demo report ${id} created locally. It has not been sent to BCMM.`);
+      navigate('reports');
+    }
+    if(e.target.id==='adminUserForm'){
+      e.preventDefault();
+      if(role!=='admin'){setToast('Only administrators can create user accounts.');return;}
+      const name=$('#newUserName').value.trim(), email=$('#newUserEmail').value.trim().toLowerCase(), newRole=$('#newUserRole').value, area=$('#newUserArea').value, password=$('#newUserPassword').value, confirm=$('#newUserConfirm').value;
+      if(password!==confirm){setToast('Passwords do not match.');return;}
+      try {
+        const account=await api('/api/auth/accounts',{method:'POST',body:JSON.stringify({name,email,password,role:newRole,area})});
+        accounts.push({...account,password}); setToast(`Account created for ${name} through the EcoEast API.`); renderPage();
+      } catch(err) { setToast(err.message); }
+    }
+    if(e.target.id==='profileForm'){
+      e.preventDefault();
+      const name=$('#profileName').value.trim();
+      roleInfo[role].name=name||roleInfo[role].name;
+      renderNav();setToast('Demo profile updated for this session.');
+    }
+  });
+  const demoEmails = {resident:'resident@ecoeast.demo',manager:'manager@ecoeast.demo',worker:'worker@ecoeast.demo',admin:'admin@ecoeast.demo'};
+  function showLogin(){ $('#loginForm').style.display=''; $('#registerForm').style.display='none'; $('#loginError').style.display='none'; }
+  function showRegister(){ $('#loginForm').style.display='none'; $('#registerForm').style.display=''; $('#registerError').style.display='none'; }
+  $('#showRegisterBtn').addEventListener('click',showRegister);
+  $('#showLoginBtn').addEventListener('click',showLogin);
+  $('#loginRole').addEventListener('change', e => {
+    const r=e.target.value;
+    if(demoEmails[r]) { $('#loginEmail').value=demoEmails[r]; $('#loginPassword').value='EcoEast123!'; } else { $('#loginEmail').value=''; $('#loginPassword').value=''; }
+    $('#loginError').style.display='none';
+  });
+  $('#loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const chosen=$('#loginRole').value, email=$('#loginEmail').value.trim().toLowerCase(), password=$('#loginPassword').value;
+    if(chosen==='public') { role='public'; signedInAccount={name:'Public Visitor',email,role:'public',area:'Public',status:'Active'}; }
+    else {
+      try {
+        const account=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password,role:chosen})});
+        const local={...account,password};
+        const idx=accounts.findIndex(u=>u.email.toLowerCase()===email);
+        if(idx>=0) accounts[idx]=local; else accounts.push(local);
+        signedInAccount=local; role=account.role;
+      } catch(err) { $('#loginError').textContent=err.message; $('#loginError').style.display='block'; return; }
+    }
+    page='home'; document.body.classList.add('logged-in'); $('#roleSelect').value=role; render();
+    setToast(`Signed in to the ${roleInfo[role].label} workspace.`);
+  });
+  $('#registerForm').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const name=$('#regName').value.trim(), email=$('#regEmail').value.trim().toLowerCase(), area=$('#regArea').value, password=$('#regPassword').value, confirm=$('#regConfirm').value;
+    const error=$('#registerError');
+    if(password.length<8){error.textContent='Choose a password with at least 8 characters.';error.style.display='block';return;}
+    if(password!==confirm){error.textContent='The passwords do not match.';error.style.display='block';return;}
+    try {
+      const account=await api('/api/auth/register',{method:'POST',body:JSON.stringify({name,email,area,password})});
+      const local={...account,password}; accounts.push(local); signedInAccount=local; role='resident'; page='home';
+      document.body.classList.add('logged-in'); $('#roleSelect').value='resident'; render(); setToast('Resident profile created through the EcoEast API.'); $('#registerForm').reset(); showLogin();
+    } catch(err) { error.textContent=err.message; error.style.display='block'; }
+  });
+  $('#logoutBtn').addEventListener('click',()=>{
+    document.body.classList.remove('logged-in'); $('#loginPassword').value=''; $('#loginError').style.display='none';
+    $('#loginRole').value='resident'; $('#loginEmail').value=demoEmails.resident; role='resident'; page='home'; signedInAccount=null; showLogin();
+  });
+  // Prefill the resident demo account for convenient testing.
+  syncAccounts();
+  $('#loginEmail').value=demoEmails.resident;
+  render();
+})();
+</script>
+</body>
+</html>
